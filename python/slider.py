@@ -1,4 +1,8 @@
 #! /usr/bin/env python
+## slider.py
+## Control a HTML presentation using browser automation (Selenium)
+## Receives control characters over a socket connection
+## TODO: custom keybindings from a file
 
 import sys
 import os
@@ -35,7 +39,16 @@ def get_full_path(filename):
         raise PathError
 
 def socket_start():
-    pass
+    """ Create and bind a server socket to a local address """
+    host = HOST_IP
+    port = 51200
+    remote = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    remote.bind((host, port))
+    remote.listen(1)            # Accept only one client
+
+
+
+
 
 def driver(address):
     driver = webdriver.Firefox()
