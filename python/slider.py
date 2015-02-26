@@ -7,6 +7,7 @@
 import sys
 import os
 import socket
+import SocketServer
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
@@ -47,29 +48,29 @@ def socket_start():
     remote.listen(1)            # Accept only one client
 
 
+class SocketService(SocketServer.BaseRequestHandler):
+    def handle(self):
+        print self.client_address
+        while True:
+            self.data = self.request.recv(1024)
+            if not self.data:
+                break
+            self.data = self.data.strip()
+            print self.data
+            self.server.ctl.send_keys(Keys.ARROW_RIGHT)
+
+        print "Client closed socket"
 
 
+class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+    pass
 
-def driver(address):
+
+def setup_webdriver(address):
     driver = webdriver.Firefox()
     driver.get(address)
     elem = driver.find_element_by_class_name("controls")
-    elem.send_keys(Keys.ARROW_RIGHT)
-    driver.implicitly_wait(10)
-
-    elem.send_keys(Keys.ARROW_RIGHT)
-    driver.implicitly_wait(10)
-    elem.send_keys(Keys.ARROW_RIGHT)
-
-    driver.implicitly_wait(10)
-    elem.send_keys(Keys.ARROW_RIGHT)
-
-    driver.implicitly_wait(1)
-    elem.send_keys(Keys.ARROW_RIGHT)
-
-    driver.implicitly_wait(1)
-    elem.send_keys(Keys.ARROW_RIGHT)
-    driver.close()
+    return elem
 
 def main():
     try:
@@ -87,7 +88,11 @@ def main():
             path = [header, file_path]
             address = separator.join(path)
             print address
-            driver(address)
+            ctl = setup_webdriver(address)
+
+    t = ThreadedTCPServer(('', 5300), SocketService)
+    t.ctl = ctl
+    t.serve_forever()
 
 if __name__ == '__main__':
     main()
