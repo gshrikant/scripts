@@ -39,15 +39,6 @@ def get_full_path(filename):
     else:
         raise PathError
 
-def socket_start():
-    """ Create and bind a server socket to a local address """
-    host = HOST_IP
-    port = 51200
-    remote = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    remote.bind((host, port))
-    remote.listen(1)            # Accept only one client
-
-
 class SocketService(SocketServer.BaseRequestHandler):
     def handle(self):
         print self.client_address
