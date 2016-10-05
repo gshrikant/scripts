@@ -11,6 +11,9 @@ do
         if [ $caps_stat != $old_stat ];
         then
             old_stat=$caps_stat
+
+            # Notification for 25 ms, with keyboard icon.
+            # ${str^^} used to convert $str to uppercase.
             notify-send "Caps Lock" "${caps_stat^^}" -i input-keyboard -t 25
         fi
     done <<< "$(xset -q | grep "Caps Lock")"
